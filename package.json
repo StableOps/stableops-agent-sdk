@@ -1,0 +1,64 @@
+{
+  "name": "@stableops/agent-sdk",
+  "version": "0.2.1",
+  "private": false,
+  "description": "StableOps Node.js SDK for policy-controlled x402 payments by AI agents.",
+  "keywords": [
+    "stableops",
+    "x402",
+    "agent",
+    "sdk",
+    "usdc"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://stableops.dev",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "pnpm build",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@x402/core": "^2.20.0",
+    "@x402/evm": "^2.20.0",
+    "viem": "^2.51.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@stableops/agent-signer": "workspace:*",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.16.0",
+    "globals": "^15.14.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^3.2.4"
+  }
+}
