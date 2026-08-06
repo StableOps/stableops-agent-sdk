@@ -80,19 +80,14 @@ function assertSidecarResult(value: unknown): asserts value is SidecarAuthorizat
     result.grantId.length === 0 ||
     typeof result.authorizationId !== 'string' ||
     result.authorizationId.length === 0 ||
-    !isAddress(result.walletAddress, { strict: false }) ||
+    !(isAddress(result.walletAddress, { strict: false }) ||
+      /^[1-9A-HJ-NP-Za-km-z]{32,44}$/u.test(result.walletAddress)) ||
     !isHex(result.typedDataHash, { strict: true }) ||
     result.typedDataHash.length !== 66 ||
-    !isHex(result.signature, { strict: true }) ||
-    result.signature.length !== 132 ||
-    !result.authorization ||
-    !isAddress(result.authorization.from, { strict: false }) ||
-    !isAddress(result.authorization.to, { strict: false }) ||
-    !/^[1-9]\d*$/u.test(result.authorization.value) ||
-    !/^\d+$/u.test(result.authorization.validAfter) ||
-    !/^[1-9]\d*$/u.test(result.authorization.validBefore) ||
-    !isHex(result.authorization.nonce, { strict: true }) ||
-    result.authorization.nonce.length !== 66
+    !(
+      (result.payload && typeof result.payload === 'object') ||
+      (result.authorization && result.signature)
+    )
   ) {
     throw new SidecarError('signer sidecar returned an invalid authorization')
   }

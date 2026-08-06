@@ -179,7 +179,7 @@ type WireAuthorizationResult = {
 
 type WireRequirement = {
   scheme: string
-  network: `eip155:${number}`
+  network: `${string}:${string}`
   asset: string
   amount?: string
   max_amount_atomic?: string
@@ -220,7 +220,7 @@ type WireRuntimePayment = WireIntentResult & {
   network: string
   asset: 'USDC'
   asset_contract: string
-  asset_decimals: 6
+  asset_decimals: number
   max_amount_atomic: string
   created_at: string
   updated_at: string
@@ -321,7 +321,7 @@ function fromWireRuntimePayment(wire: WireRuntimePayment): AgentPaymentRecord {
     !wire.pay_to ||
     !wire.network ||
     wire.asset !== 'USDC' ||
-    wire.asset_decimals !== 6 ||
+    (wire.asset_decimals !== 6 && wire.asset_decimals !== 18) ||
     !wire.asset_contract ||
     typeof wire.max_amount_atomic !== 'string' ||
     !wire.created_at ||

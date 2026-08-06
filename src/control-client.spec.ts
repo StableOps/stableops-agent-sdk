@@ -110,10 +110,10 @@ describe('AgentPaymentsControlClient', () => {
       resource_url: 'https://api.example.com/paid',
       origin: 'https://api.example.com',
       pay_to: '0x0000000000000000000000000000000000000001',
-      network: 'eip155:84532',
+      network: 'eip155:56',
       asset: 'USDC',
       asset_contract: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
-      asset_decimals: 6,
+      asset_decimals: 18,
       max_amount_atomic: '100',
       created_at: '2026-07-30T00:00:00.000Z',
       updated_at: '2026-07-30T00:01:00.000Z',
@@ -160,6 +160,7 @@ describe('AgentPaymentsControlClient', () => {
         intentId: 'pint_1',
         status: 'settled',
         maxAmountAtomic: '100',
+        assetDecimals: 18,
       }),
     ])
     await expect(client.getPayment('pint_1')).resolves.toMatchObject({

@@ -112,14 +112,15 @@ and x402 examples, see the official documentation:
 
 ## Current Support
 
-The Private Alpha supports:
+The current release supports:
 
 - x402 v2 `exact` payments.
-- `GET` requests on Base Sepolia.
-- The official Base Sepolia USDC contract.
+- `GET` requests on six EVM mainnets and their testnets, plus Solana mainnet and Devnet.
+- Configured USDC contracts on those networks. TRON and Nile are excluded.
+- Sandbox test networks only and Live mainnets only; Live remains subject to organization risk gates.
 
-It does not support Mainnet, browser or Edge runtimes, arbitrary ERC-20 assets,
-`POST`, `upto`, direct transfers, or raw private keys.
+It does not support browser or Edge runtimes, assets other than USDC, `POST`,
+`upto`, direct transfers, or raw private keys.
 
 Never retry a `SettlementUnknownError` by creating another intent. Query the
 existing intent and let StableOps reconcile its authorization nonce.

@@ -8,7 +8,7 @@ import { parseX402Requirement } from './x402'
 const URL = 'https://api.example.com/paid'
 
 describe('parseX402Requirement', () => {
-  it('只接受 Base Sepolia 官方 USDC 的 exact EIP-3009 要求', () => {
+  it('接受 Base Sepolia USDC 的 exact EIP-3009 要求', () => {
     const selected = parseX402Requirement(challenge([requirement()])).selected
     expect(selected).toMatchObject({
       scheme: 'exact',
@@ -17,7 +17,32 @@ describe('parseX402Requirement', () => {
     })
   })
 
-  it('拒绝非官方 USDC', () => {
+  it('接受 BNB Smart Chain 测试网 Permit2 和 Solana Devnet USDC 要求', () => {
+    const bsc = parseX402Requirement(
+      challenge([
+        requirement({
+          network: 'eip155:97',
+          asset: '0x64544969ed7EBf5f083679233325356EbE738930',
+          extra: { assetTransferMethod: 'permit2' },
+        }),
+      ]),
+    ).selected
+    expect(bsc.network).toBe('eip155:97')
+
+    const solana = parseX402Requirement(
+      challenge([
+        requirement({
+          network: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+          asset: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
+          payTo: 'Vote111111111111111111111111111111111111111',
+          extra: { feePayer: '11111111111111111111111111111111' },
+        }),
+      ]),
+    ).selected
+    expect(solana.network).toBe('solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
+  })
+
+  it('拒绝网络中未配置的 USDC', () => {
     const response = challenge([
       requirement({ asset: '0x0000000000000000000000000000000000000002' }),
     ])

@@ -167,16 +167,15 @@ export class StableOpsAgent {
       })
       throw error
     }
-    const signatureHash = hashSignature(signed.signature)
+    const signedPayload =
+      signed.payload ?? { authorization: signed.authorization!, signature: signed.signature! }
+    const signatureHash = hashSignature(signed.signature ?? JSON.stringify(signedPayload))
 
     const paymentPayload: PaymentPayload = {
       x402Version: 2,
       resource: parseX402Requirement(challengeResponse).paymentRequired.resource,
       accepted: requirements,
-      payload: {
-        authorization: signed.authorization,
-        signature: signed.signature,
-      },
+      payload: signedPayload,
     }
     const paymentHeader = encodePaymentSignatureHeader(paymentPayload)
 
@@ -276,11 +275,32 @@ function assertSignedAuthorization(
   if (signed.authorizationId !== authorizationId) {
     throw new SidecarError('signer sidecar returned a different authorization ID')
   }
-  if (
-    getAddress(signed.authorization.from) !== getAddress(signed.walletAddress) ||
-    getAddress(signed.authorization.to) !== getAddress(requirements.payTo) ||
-    signed.authorization.value !== requirements.amount
-  ) {
+  const payload = signed.payload ??
+    (signed.authorization && signed.signature
+      ? { authorization: signed.authorization, signature: signed.signature }
+      : undefined)
+  if (!payload || typeof payload !== 'object') {
+    throw new SidecarError('signer sidecar returned an invalid payment payload')
+  }
+  if ('authorization' in payload && (
+    getAddress(payload.authorization.from) !== getAddress(signed.walletAddress) ||
+    getAddress(payload.authorization.to) !== getAddress(requirements.payTo) ||
+    payload.authorization.value !== requirements.amount
+  )) {
     throw new SidecarError('signer sidecar authorization does not match payment requirements')
+  }
+  if ('permit2Authorization' in payload) {
+    const authorization = payload.permit2Authorization
+    if (
+      getAddress(authorization.from) !== getAddress(signed.walletAddress) ||
+      getAddress(authorization.permitted.token) !== getAddress(requirements.asset) ||
+      getAddress(authorization.witness.to) !== getAddress(requirements.payTo) ||
+      authorization.permitted.amount !== requirements.amount
+    ) {
+      throw new SidecarError('signer sidecar Permit2 payload does not match payment requirements')
+    }
+  }
+  if ('transaction' in payload && typeof payload.transaction !== 'string') {
+    throw new SidecarError('signer sidecar returned an invalid Solana transaction')
   }
 }

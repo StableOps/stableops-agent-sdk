@@ -1,5 +1,5 @@
 import type { PaymentRequired, PaymentRequirements, SettleResponse } from '@x402/core/types'
-import type { ExactEIP3009Payload } from '@x402/evm'
+import type { ExactEIP3009Payload, ExactEvmPayloadV2 } from '@x402/evm'
 import type { Hex } from 'viem'
 
 export type AgentPaymentIntentStatus =
@@ -49,7 +49,7 @@ export type AgentPaymentRecord = {
   network: string
   asset: 'USDC'
   assetContract: string
-  assetDecimals: 6
+  assetDecimals: number
   maxAmountAtomic: string
   approvalId?: string
   approvalExpiresAt?: string
@@ -112,10 +112,11 @@ export interface AgentPaymentsControl {
 export type SidecarAuthorizationResult = {
   grantId: string
   authorizationId: string
-  walletAddress: `0x${string}`
+  walletAddress: string
   typedDataHash: Hex
-  authorization: Required<ExactEIP3009Payload>['authorization']
-  signature: Hex
+  payload?: ExactEvmPayloadV2 | { transaction: string }
+  authorization?: Required<ExactEIP3009Payload>['authorization']
+  signature?: string
 }
 
 export interface AgentSignerSidecar {

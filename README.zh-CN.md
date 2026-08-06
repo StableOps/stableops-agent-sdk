@@ -100,13 +100,14 @@ const recentPayments = await payments.listRecentPayments(20)
 
 ## 当前支持范围
 
-私测阶段支持：
+当前版本支持：
 
 - x402 v2 `exact` 付款。
-- Base Sepolia 上的 `GET` 请求。
-- Base Sepolia 官方 USDC 合约。
+- 六个 EVM 主网及其对应测试网，以及 Solana 主网和 Devnet 上的 `GET` 请求。
+- 上述网络中已配置的 USDC；TRON 和 Nile 暂不支持。
+- 沙盒只能使用测试网，正式环境只能使用主网；正式环境仍需通过组织风控门禁。
 
-当前不支持主网、浏览器或边缘运行时、任意 ERC-20 资产、`POST`、`upto`、直接转账或裸私钥。
+当前不支持浏览器或边缘运行时、USDC 之外的资产、`POST`、`upto`、直接转账或裸私钥。
 
 遇到 `SettlementUnknownError` 时，不能创建新的付款意图重付。应查询原付款意图，并由 StableOps 根据授权随机数对账。
 
