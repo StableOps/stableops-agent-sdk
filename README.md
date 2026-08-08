@@ -58,13 +58,19 @@ import {
   StableOpsAgent,
 } from '@stableops/agent-sdk'
 
+function required(name: string): string {
+  const value = process.env[name]?.trim()
+  if (!value) throw new Error(`Missing environment variable ${name}`)
+  return value
+}
+
 const payments = new StableOpsAgent({
   control: new AgentPaymentsControlClient({
-    agentKey: process.env.STABLEOPS_AGENT_KEY!,
+    agentKey: required('STABLEOPS_AGENT_KEY'),
   }),
   sidecar: new HttpAgentSignerSidecar({
     url: 'http://127.0.0.1:8789',
-    authToken: process.env.STABLEOPS_SIDECAR_TOKEN,
+    authToken: required('STABLEOPS_SIDECAR_TOKEN'),
   }),
   requester: new SafeHttpsRequester(),
 })
@@ -77,16 +83,22 @@ if (result.status === 'paid' || result.status === 'not_required') {
   const data = await result.response.json()
   console.log(data)
 } else if (result.status === 'awaiting_approval') {
-  // Save result.intentId and resume the same payment after approval.
-
-  const resumed = await payments.x402Fetch('https://api.example.com/paid', {
-    resumeIntentId: result.intentId,
-  })
+  // Save result.intentId and wait for the console or a Webhook to confirm approval.
+  console.log(`Waiting for approval: ${result.intentId}`)
 }
 ```
 
-After an approver approves the intent, resume it instead of creating another
-payment. The same `intentId` preserves the original authorization and budget
+Only after the console or a Webhook confirms approval, resume the original payment:
+
+```ts
+const approvedIntentId = 'pint_...' // Load the ID saved from awaiting_approval.
+const resumed = await payments.x402Fetch('https://api.example.com/paid', {
+  resumeIntentId: approvedIntentId,
+})
+```
+
+Do not resume immediately after receiving `awaiting_approval`, and do not create
+another payment. The same `intentId` preserves the approved parameters and budget
 reservation.
 
 The SDK also exposes Agent Key-scoped read methods:

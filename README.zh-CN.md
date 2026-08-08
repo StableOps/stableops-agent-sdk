@@ -51,13 +51,19 @@ import {
   StableOpsAgent,
 } from '@stableops/agent-sdk'
 
+function required(name: string): string {
+  const value = process.env[name]?.trim()
+  if (!value) throw new Error(`缺少环境变量 ${name}`)
+  return value
+}
+
 const payments = new StableOpsAgent({
   control: new AgentPaymentsControlClient({
-    agentKey: process.env.STABLEOPS_AGENT_KEY!,
+    agentKey: required('STABLEOPS_AGENT_KEY'),
   }),
   sidecar: new HttpAgentSignerSidecar({
     url: 'http://127.0.0.1:8789',
-    authToken: process.env.STABLEOPS_SIDECAR_TOKEN,
+    authToken: required('STABLEOPS_SIDECAR_TOKEN'),
   }),
   requester: new SafeHttpsRequester(),
 })
@@ -70,15 +76,21 @@ if (result.status === 'paid' || result.status === 'not_required') {
   const data = await result.response.json()
   console.log(data)
 } else if (result.status === 'awaiting_approval') {
-  // 保存 result.intentId，审批通过后继续执行同一笔付款。
-
-  const resumed = await payments.x402Fetch('https://api.example.com/paid', {
-    resumeIntentId: result.intentId,
-  })
+  // 保存 result.intentId，等待控制台或 Webhook 确认审批通过。
+  console.log(`等待审批：${result.intentId}`)
 }
 ```
 
-审批人批准付款意图后，应继续执行原付款，不能新建付款。复用同一个 `intentId` 可以保留原有授权和预算预留。
+只有在控制台或 Webhook 已经确认审批通过后，才能恢复原付款：
+
+```ts
+const approvedIntentId = 'pint_...' // 读取 awaiting_approval 阶段保存的 ID。
+const resumed = await payments.x402Fetch('https://api.example.com/paid', {
+  resumeIntentId: approvedIntentId,
+})
+```
+
+不能在收到 `awaiting_approval` 后立即恢复，也不能新建付款。复用同一个 `intentId` 可以保留原批准参数和预算预留。
 
 SDK 还提供受代理密钥范围约束的只读方法：
 
