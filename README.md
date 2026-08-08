@@ -117,7 +117,7 @@ The current release supports:
 - x402 v2 `exact` payments.
 - `GET` requests on six EVM mainnets and their testnets, plus Solana mainnet and Devnet.
 - Configured USDC contracts on those networks. TRON and Nile are excluded.
-- Sandbox test networks only and Live mainnets only; Live remains subject to organization risk gates.
+- Sandbox accepts test networks only. Live supports mainnets after StableOps enables the organization upon completion of its risk and recovery-drill gates.
 
 It does not support browser or Edge runtimes, assets other than USDC, `POST`,
 `upto`, direct transfers, or raw private keys.

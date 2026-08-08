@@ -15,7 +15,10 @@
     "type": "git",
     "url": "git+https://github.com/StableOps/stableops-agent-sdk.git"
   },
-  "homepage": "https://stableops.dev",
+  "homepage": "https://stableops.dev/en/docs/agent-payments",
+  "bugs": {
+    "url": "https://github.com/StableOps/stableops-agent-sdk/issues"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

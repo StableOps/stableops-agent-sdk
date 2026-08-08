@@ -105,7 +105,7 @@ const recentPayments = await payments.listRecentPayments(20)
 - x402 v2 `exact` 付款。
 - 六个 EVM 主网及其对应测试网，以及 Solana 主网和 Devnet 上的 `GET` 请求。
 - 上述网络中已配置的 USDC；TRON 和 Nile 暂不支持。
-- 沙盒只能使用测试网，正式环境只能使用主网；正式环境仍需通过组织风控门禁。
+- 沙盒只能使用测试网；正式环境支持主网，组织完成风控与恢复演练门禁后由 StableOps 开通。
 
 当前不支持浏览器或边缘运行时、USDC 之外的资产、`POST`、`upto`、直接转账或裸私钥。
 
